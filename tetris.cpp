@@ -5,6 +5,9 @@ using namespace std;
 
 wstring tetr[7];
 
+int fieldw = 12;
+int fieldh = 18;
+unsigned char*pfield = nullptr;
 
 
 int rotation(int x, int y, int r)
@@ -64,5 +67,10 @@ int main()
     tetr[6].append(L".X..");
     tetr[6].append(L".X..");
 
+    pfield = new unsigned char[fieldw * fieldh];
+  for(int l = 0; l < fieldw; l++)
+    for(int k = 0; k < fieldh; k++)
+      pfield[k * fieldw + l] = (l == 0 || l == fieldw - 1 || k == fieldh) ? 10 : 0;
+    
     return 0;
 }
