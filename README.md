@@ -1,4 +1,4 @@
-<h1 align = "center">Team Elec-trics</h1>
+<h1 align = "center">Team Elec-triks</h1>
 
 # 💻 About
 
