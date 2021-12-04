@@ -139,7 +139,7 @@ int main()
                 screen[(y + 2) * nScreenWidth + (x + 2)] = L" ABCDEFG=#"[playingF[y * nFieldWidth + x]];
 
 
-        //Draw Frame
+        //Draw Frames
         WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
     }
 
