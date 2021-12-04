@@ -10,14 +10,30 @@ using namespace std;
 
 #include <Windows.h>
 
+
+wstring tetr[7];
+int nFieldWidth = 12;
+int nFieldHeight = 18;
+unsigned char* playingF = nullptr;
+
 wstring tetromino[7];
 int nFieldWidth = 12;
 int nFieldHeight = 18;
-unsigned char* pField = nullptr;
+unsigned char* playingF = nullptr;
+
 
 int nScreenWidth = 120; //y na tetris
 int nScreenHeight = 30; //x na tetris
 
+
+int Rotate(int a, int b, int r)
+{
+    switch (r % 4)
+    {
+    case 0: return b * 4 + a;
+    case 1: return 12 + b - (a * 4);
+    case 2: return 15 - (b * 4) - a;
+    case 3: return 3 - b + (a * 4);
 
 int Rotate(int px, int py, int r)
 {
@@ -30,6 +46,82 @@ int Rotate(int px, int py, int r)
     }
     return 0;
 }
+
+
+bool piecefit(int aTetr, int rotation, Xposition, int Yposition)
+{
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+        {
+            int P = Rotate(i, j, rotation);
+
+            int F = (Yposition + j) * nFieldWidth + (Xposition + i);
+
+            if (Xposition + i >= 0 && Xposition + i < nFieldWidth)
+            {
+                if (Yposition + j >= 0 && Yposition + j < nFiedlHeight)
+                {
+                    if (tetr[aTetr][P] == L'X' && playingF[F] != 0)
+                        return false;
+                }
+            }
+        }
+    
+    
+    
+    
+    return true;
+}
+
+
+int main()
+{
+    tetr[0].append(L"..X.");
+    tetr[0].append(L"..X.");
+    tetr[0].append(L"..X.");
+    tetr[0].append(L"..X.");
+
+
+    tetr[1].append(L"..X.");
+    tetr[1].append(L".XX.");
+    tetr[1].append(L".X..");
+    tetr[1].append(L"....");
+
+
+
+    tetr[2].append(L"..X.");
+    tetr[2].append(L".XX.");
+    tetr[2].append(L"..X.");
+    tetr[2].append(L"....");
+
+
+    tetr[3].append(L"....");
+    tetr[3].append(L".XX.");
+    tetr[3].append(L".XX.");
+    tetr[3].append(L"....");
+
+
+    tetr[4].append(L"..X.");
+    tetr[4].append(L".XX.");
+    tetr[4].append(L"..X.");
+    tetr[4].append(L"....");
+
+
+    tetr[5].append(L"....");
+    tetr[5].append(L".XX.");
+    tetr[5].append(L"..X.");
+    tetr[5].append(L"..X.");
+
+    tetr[6].append(L"..X.");
+    tetr[6].append(L"..X.");
+    tetr[6].append(L".X..");
+    tetr[6].append(L".X..");
+
+    playingF = new unsigned char[nFieldWidth * nFieldHeight];
+
+    for (int x = 0; x < nFieldWidth; x++)
+        for (int y = 0; y < nFieldHeight; y++)
+            playingF[y * nFieldWidth + x] = (x == 0 || x == nFieldWidth - 1 || y == nFieldHeight - 1) ? 9 : 0;
 
 
 int main()
@@ -75,11 +167,12 @@ int main()
     tetromino[6].append(L".X..");
     tetromino[6].append(L".X..");
 
-    pField = new unsigned char[nFieldWidth * nFieldHeight];
+    playingF = new unsigned char[nFieldWidth * nFieldHeight];
 
     for (int x = 0; x < nFieldWidth; x++)
         for (int y = 0; y < nFieldHeight; y++)
-            pField[y * nFieldWidth + x] = (x == 0 || x == nFieldWidth - 1 || y == nFieldHeight - 1) ? 9 : 0;
+            playingF[y * nFieldWidth + x] = (x == 0 || x == nFieldWidth - 1 || y == nFieldHeight - 1) ? 9 : 0;
+
 
 
     wchar_t* screen = new wchar_t[nScreenWidth * nScreenHeight];
@@ -95,11 +188,19 @@ int main()
         //Draw Field
         for (int x = 0; x < nFieldWidth; x++)
             for (int y = 0; y < nFieldHeight; y++)
-                screen[(y + 2) * nScreenWidth + (x + 2)] = L" ABCDEFG=#"[pField[y * nFieldWidth + x]];
+
+                screen[(y + 2) * nScreenWidth + (x + 2)] = L" ABCDEFG=#"[playingF[y * nFieldWidth + x]];
+
+                screen[(y + 2) * nScreenWidth + (x + 2)] = L" ABCDEFG=#"[playingF[y * nFieldWidth + x]];
+
 
         //Draw Frame
         WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
     }
 
     return 0;
+
 }
+
+}
+
