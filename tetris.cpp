@@ -1,42 +1,41 @@
 #include <iostream>
 #include <Windows.h>
-
 using namespace std;
 
-wstring tetromino[7];
-int nFieldWidth = 12;
-int nFieldHeight = 18;
-unsigned char* pField = nullptr;
+wstring tetr[7];
+int FWidth = 12;
+int FHeight = 18;
+unsigned char* playingField = nullptr;
 
-int nScreenWidth = 120; //y na tetris
-int nScreenHeight = 30; //x na tetris
-int Rotate(int px, int py, int r)
+int swidth = 120; //y na tetris
+int swidth = 30; //x na tetris
+int Rotate(int pieceX, int pieceY, int r)
 {
     switch (r % 4)
     {
-    case 0: return py * 4 + px;
-    case 1: return 12 + py - (px * 4);
-    case 2: return 15 - (py * 4) - px;
-    case 3: return 3 - py + (px * 4);
+    case 0: return pieceY * 4 + pieceX;
+    case 1: return 12 + pieceY - (pieceX * 4);
+    case 2: return 15 - (pieceY * 4) - pieceX;
+    case 3: return 3 - pieceY + (pieceX * 4);
     }
     return 0;
 }
 
-bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
+bool DoesPieceFit(int ntetr, int nrotate, int nPosX, int positionY)
 {
-    for(int px = 0; px < 4; px++)
-        for (int py = 0; py < 4; py++)
+    for(int pieceX = 0; pieceX < 4; pieceX++)
+        for (int pieceY = 0; pieceY < 4; pieceY++)
         {
-            int pi = Rotate(px, py, nRotation);
+            int pi = Rotate(pieceX, pieceY, nrotate);
 
             //Index Field
-            int fi = (nPosY + py) * nFieldWidth + (nPosX + px);
+            int fi = (positionY + pieceY) * FWidth + (nPosX + pieceX);
 
-            if (nPosX + px >= 0 && nPosY + px < nFieldWidth)
+            if (nPosX + pieceX >= 0 && positionY + pieceX < FWidth)
             {
-                if (nPosY + py >= 0 && nPosY + py < nFieldHeight)
+                if (positionY + pieceY >= 0 && positionY + pieceY < FHeight)
                 {
-                    if (tetromino[nTetromino][pi] == L'X' && pField[fi] != 0)
+                    if (tetr[ntetr][pi] == L'X' && playingField[fi] != 0)
                         return false;
                 }
             }
@@ -46,92 +45,100 @@ bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
 }
 int main()
 {
-    tetromino[0].append(L"..X.");
-    tetromino[0].append(L"..X.");
-    tetromino[0].append(L"..X.");
-    tetromino[0].append(L"..X.");
+    tetr[0].append(L"..X.");
+    tetr[0].append(L"..X.");
+    tetr[0].append(L"..X.");
+    tetr[0].append(L"..X.");
 
 
-    tetromino[1].append(L"..X.");
-    tetromino[1].append(L".XX.");
-    tetromino[1].append(L".X..");
-    tetromino[1].append(L"....");
+    tetr[1].append(L"..X.");
+    tetr[1].append(L".XX.");
+    tetr[1].append(L".X..");
+    tetr[1].append(L"....");
 
 
 
-    tetromino[2].append(L"..X.");
-    tetromino[2].append(L".XX.");
-    tetromino[2].append(L"..X.");
-    tetromino[2].append(L"....");
+    tetr[2].append(L"..X.");
+    tetr[2].append(L".XX.");
+    tetr[2].append(L"..X.");
+    tetr[2].append(L"....");
 
 
-    tetromino[3].append(L"....");
-    tetromino[3].append(L".XX.");
-    tetromino[3].append(L".XX.");
-    tetromino[3].append(L"....");
+    tetr[3].append(L"....");
+    tetr[3].append(L".XX.");
+    tetr[3].append(L".XX.");
+    tetr[3].append(L"....");
 
 
-    tetromino[4].append(L"..X.");
-    tetromino[4].append(L".XX.");
-    tetromino[4].append(L"..X.");
-    tetromino[4].append(L"....");
+    tetr[4].append(L"..X.");
+    tetr[4].append(L".XX.");
+    tetr[4].append(L"..X.");
+    tetr[4].append(L"....");
 
 
-    tetromino[5].append(L"....");
-    tetromino[5].append(L".XX.");
-    tetromino[5].append(L"..X.");
-    tetromino[5].append(L"..X.");
+    tetr[5].append(L"....");
+    tetr[5].append(L".XX.");
+    tetr[5].append(L"..X.");
+    tetr[5].append(L"..X.");
 
-    tetromino[6].append(L"..X.");
-    tetromino[6].append(L"..X.");
-    tetromino[6].append(L".X..");
-    tetromino[6].append(L".X..");
+    tetr[6].append(L"..X.");
+    tetr[6].append(L"..X.");
+    tetr[6].append(L".X..");
+    tetr[6].append(L".X..");
 
-    pField = new unsigned char[nFieldWidth * nFieldHeight];
+    playingField = new unsigned char[FWidth * FHeight];
 
-    for (int x = 0; x < nFieldWidth; x++)
-        for (int y = 0; y < nFieldHeight; y++)
-            pField[y * nFieldWidth + x] = (x == 0 || x == nFieldWidth - 1 || y == nFieldHeight - 1) ? 9 : 0;
+    for (int x = 0; x < FWidth; x++)
+        for (int y = 0; y < FHeight; y++)
+            playingField[y * FWidth + x] = (x == 0 || x == FWidth - 1 || y == FHeight - 1) ? 9 : 0;
 
 
-    wchar_t* screen = new wchar_t[nScreenWidth * nScreenHeight];
-    for (int i = 0; i < nScreenWidth * nScreenHeight; i++) screen[i] = L' ';
-    HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-    SetConsoleActiveScreenBuffer(hConsole);
-    DWORD dwBytesWritten = 0;
+    wchar_t* screen = new wchar_t[swidth * swidth];
+    for (int i = 0; i < swidth * swidth; i++) screen[i] = L' ';
+    HANDLE console = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+    SetConsoleActiveScreenBuffer(console);
+    DWORD bytesWritten = 0;
 
     // Game Logic
-    bool bGameOver = false;
+    bool gameOVER = false;
 
-    int nCurrentPiece = 0;
-    int nCurrentRotation = 0;
-    int nCurrentX = nFieldWidth / 2;
-    int nCurrentY = 0;
+    int currentpiece = 1;
+    int currentrotate = 0;
+    int currentx = FWidth / 2;
+    int currenty = 0;
 
+    bool key[4];
 
-    while (!bGameOver)
+    while (!gameOVER)
     {
 
-        //time 
+        //GAME TIME 
+        this_thread::sleep_for(50ms);
+        //INPUT 
+            for(int k = 0; k < 4; k++)
+                key[k] = (0x8000 && GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[k]))) !=0
+        //GAME LOGIC
+                if (key[1])
+                {
+                    if (DoesPieceFit(currentpiece, currentrotate, currentx - 1, currenty))
+                    {
+                        currentx = currentx - 1;
+                    }
+                }
+        //RENDER OUTPUT
 
-        //input 
+        //Draw Field
+        for (int x = 0; x < FWidth; x++)
+            for (int y = 0; y < FHeight; y++)
+                screen[(y + 2) * swidth + (x + 2)] = L" KGAOPQR=#"[playingField[y * FWidth + x]];
 
-        //logistics
-
-        //output
-
-        //field
-        for (int x = 0; x < nFieldWidth; x++)
-            for (int y = 0; y < nFieldHeight; y++)
-                screen[(y + 2) * nScreenWidth + (x + 2)] = L" ABCDEFG=#"[pField[y * nFieldWidth + x]];
-
-        //pieces
-        for (int px = 0; px < 4; px++)
-            for (int py = 0; py < 4; py++)
-                if (tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] == L'X')
-                    screen[(nCurrentY + py + 2) * nScreenWidth + (nCurrentX + px + 2)] = nCurrentPiece + 65;
-        //frame
-        WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
+        //Draw Piece
+        for (int pieceX = 0; pieceX < 4; pieceX++)
+            for (int pieceY = 0; pieceY < 4; pieceY++)
+                if (tetr[currentpiece][Rotate(pieceX, pieceY, currentrotate)] == L'X')
+                    screen[(currenty + pieceY + 2) * swidth + (currentx + pieceX + 2)] = currentpiece + 65;
+        //Draw Frame
+        WriteConsoleOutputCharacter(console, screen, swidth * swidth, { 0,0 }, &bytesWritten);
     }
 
     return 0;
