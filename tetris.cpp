@@ -113,15 +113,19 @@ int main()
 
     int speed = 20;
     int speedcount = 0;
-    int forcedown = false;
+    bool forcedown = false;
+
+    vector<int> lines
+
+
 
     while (!gameover)
     {
 
         //time 
         this_thread::sleep_for(50ms);
-        speedcoun++;
-        forcedown = (speedcoun == speed);
+        speedcount++;
+        forcedown = (speedcount == speed);
 
         //input 
         for (int i = 0; i < 4; i++)
@@ -151,7 +155,7 @@ int main()
                 // locking the piece to stay in the field
                 for (int a = 0; a < 4; a++)
                     for (int b = 0; b < 4; b++)
-                        if (tetr[currentpiece][rotate(a, b, currentrotate)] == L'X')
+                        if (tetr[currentpiece][Rotate(a, b, currentrotate)] == L'X')
                             playingF[(currenty + b) * fieldW + (currentx + a)] = currentpiece + 1;
 
                 // checking for lines
@@ -167,6 +171,8 @@ int main()
                             // removing the line
                             for (int a = 1; a < fieldW - 1; a++)
                                 playingF[(currenty + b) * fieldW = px] = 8;
+
+                            lines.push_back(currenty + b);
                         }
                     }
                 
@@ -175,7 +181,7 @@ int main()
                 currentx = fieldW / 2;
                 currenty = 0;
                 currentrotate = 0;
-                currentpiece = random() % 7;
+                currentpiece = rand() % 7;
                 
                 // If the piece doesn't fit
                 gameover = !PieceFit(currentpiece, currentrotate, currentx, currenty + 1);
@@ -195,6 +201,24 @@ int main()
             for (int b = 0; b < 4; b++)
                 if (tetr[currentpiece][Rotate(a, b, currentrotate)] == L'X')
                     screen[(currenty + b + 2) * nScreenWidth + (currentx + a + 2)] = currentpiece + 65;
+
+        if (!lines.empty())
+        {
+            WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
+            this_thread::sleep_for(400ms);
+
+            for (auto &v : lines)
+                for (int a = 1; a < fieldW - 1; a++)
+                {
+                    for (int b = v; b > 0; b--)
+                        playingF[b * fieldW + a] = playingF[(b - 1) * fieldW + a];
+                    playingF[a] = 0;
+
+                }
+            lines.clear();
+        }
+       
+            
         //frame
         WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
     }
