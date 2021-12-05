@@ -1,228 +1,229 @@
 #include <iostream>
-#include <Windows.h>
-#include <cstring>
-
+#include <thread>
+#include <vector>
 using namespace std;
 
-wstring tetr[7];
+#include <stdio.h>
+#include <Windows.h>
+
+int screenW = 120;	// x na tetis
+int screenH = 30;	// y na tetris
+wstring tetr[10];
 int fieldW = 12;
 int fieldH = 18;
 unsigned char* playingF = nullptr;
 
-int nScreenWidth = 120; //y na tetris
-int nScreenHeight = 30; //x na tetris
-int Rotate(int a, int b, int r)
+int Rotate(int pointX, int pointY, int r)
 {
-    switch (r % 4)
-    {
-    case 0: return b * 4 + a;
-    case 1: return 12 + b - (a * 4);
-    case 2: return 15 - (b * 4) - a;
-    case 3: return 3 - b + (a * 4);
-    }
-    return 0;
+	int pi = 0;
+	switch (r % 4)
+	{
+	case 0: // 0 degrees			
+		pi = pointY * 4 + pointX;			
+		break;						
+									
+
+	case 1: // 90 degrees			
+		pi = 12 + pointY - (pointX * 4);	
+		break;						
+									
+
+	case 2: // 180 degrees			
+		pi = 15 - (pointY * 4) - pointX;	
+		break;						
+									
+
+	case 3: // 270 degrees			
+		pi = 3 - pointY + (pointX * 4);		
+		break;						
+	}								
+
+	return pi;
 }
 
-bool PieceFit(int ntetr, int nrotate, int nPosX, int nPosY)
+bool PieceFit(int tetro, int rotate, int posX, int posY)
 {
-    for (int a = 0; a < 4; a++)
-        for (int b = 0; b < 4; b++)
-        {
-            int pi = Rotate(a, b, nrotate);
+	
+	for (int pointX = 0; pointX < 4; pointX++)
+		for (int pointY = 0; pointY < 4; pointY++)
+		{
+			int pi = Rotate(pointX, pointY, rotate);
 
-            //Index Field
-            int fi = (nPosY + b) * fieldW + (nPosX + a);
+			int fi = (posY + pointY) * fieldW + (posX + pointX);
 
-            if (nPosX + a >= 0 && nPosY + a < fieldW)
-            {
-                if (nPosY + b >= 0 && nPosY + b < fieldH)
-                {
-                    if (tetr[ntetr][pi] == L'X' && playingF[fi] != 0)
-                        return false;
-                }
-            }
-        }
+			
+			if (posX + pointX >= 0 && posX + pointX < fieldW)
+			{
+				if (posY + pointY >= 0 && posY + pointY < fieldH)
+				{
+					// In Bounds so do collision check
+					if (tetr[tetro][pi] != L'.' && playingF[fi] != 0)
+						return false; // fail on first hit
+				}
+			}
+		}
 
-    return true;
+	return true;
 }
+
 int main()
 {
-    tetr[0].append(L"..X.");
-    tetr[0].append(L"..X.");
-    tetr[0].append(L"..X.");
-    tetr[0].append(L"..X.");
+	// Create Screen Buffer
+	wchar_t* screen = new wchar_t[screenW * screenH];
+	for (int i = 0; i < screenW * screenH; i++) screen[i] = L' ';
+	HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+	SetConsoleActiveScreenBuffer(hConsole);
+	DWORD dwBytesWritten = 0;
 
+	tetr[0].append(L"..X...X...X...X.");
+	tetr[1].append(L"..X..XX...X.....");
+	tetr[2].append(L".....XX..XX.....");
+	tetr[3].append(L"..X..XX..X......");
+	tetr[4].append(L".X...XX...X.....");
+	tetr[5].append(L".X...X...XX.....");
+	tetr[6].append(L"..X...X..XX.....");
 
-    tetr[1].append(L"..X.");
-    tetr[1].append(L".XX.");
-    tetr[1].append(L".X..");
-    tetr[1].append(L"....");
+	playingF = new unsigned char[fieldW * fieldH]; // Create play field
+	for (int x = 0; x < fieldW; x++) 
+		for (int y = 0; y < fieldH; y++)
+			playingF[y * fieldW + x] = (x == 0 || x == fieldW - 1 || y == fieldH - 1) ? 9 : 0;
 
+	// Game Logic
+	bool Akey[4];
+	int currentpiece = 0;
+	int currentrotate = 0;
+	int currentx = fieldW / 2;
+	int currenty = 0;
+	int speed = 20;
+	int speedCount = 0;
+	bool forcedown = false;
+	bool rotatehold = true;
+	int piececount = 0;
+	int score = 0;
+	vector<int> lines;
+	bool gameover = false;
 
+	while (!gameover) // Main Loop
+	{
+		//time
+		this_thread::sleep_for(50ms); 
+		speedCount++;
+		forcedown = (speedCount == speed);
 
-    tetr[2].append(L"..X.");
-    tetr[2].append(L".XX.");
-    tetr[2].append(L"..X.");
-    tetr[2].append(L"....");
+		// Input
+		for (int i = 0; i < 4; i++)								
+			Akey[i] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[i]))) != 0;
 
+		
 
-    tetr[3].append(L"....");
-    tetr[3].append(L".XX.");
-    tetr[3].append(L".XX.");
-    tetr[3].append(L"....");
+		// player movement
+		currentx += (Akey[0] && PieceFit(currentpiece, currentrotate, currentx + 1, currenty)) ? 1 : 0;
+		currentx -= (Akey[1] && PieceFit(currentpiece, currentrotate, currentx - 1, currenty)) ? 1 : 0;
+		currenty += (Akey[2] && PieceFit(currentpiece, currentrotate, currentx, currenty + 1)) ? 1 : 0;
 
+		// Rotation
+		if (Akey[3])
+		{
+			currentrotate += (rotatehold && PieceFit(currentpiece, currentrotate + 1, currentx, currenty)) ? 1 : 0;
+			rotatehold = false;
+		}
+		else
+			rotatehold = true;
 
-    tetr[4].append(L"..X.");
-    tetr[4].append(L".XX.");
-    tetr[4].append(L"..X.");
-    tetr[4].append(L"....");
+		
+		if (forcedown)
+		{
+			// Updating difficulty every 50 pieces
+			speedCount = 0;
+			piececount++;
+			if (piececount % 50 == 0)
+				if (speed >= 10) speed--;
 
+			
+			if (PieceFit(currentpiece, currentrotate, currentx, currenty + 1))
+				currenty++; 
+			else
+			{
+				// Locking the piece in place
+				for (int pointX = 0; pointX < 4; pointX++)
+					for (int pointY = 0; pointY < 4; pointY++)
+						if (tetr[currentpiece][Rotate(pointX, pointY, currentrotate)] != L'.')
+							playingF[(currenty + pointY) * fieldW + (currentx + pointX)] = currentpiece + 1;
 
-    tetr[5].append(L"....");
-    tetr[5].append(L".XX.");
-    tetr[5].append(L"..X.");
-    tetr[5].append(L"..X.");
+				// Checking for lines
+				for (int pointY = 0; pointY < 4; pointY++)
+					if (currenty + pointY < fieldH - 1)
+					{
+						bool bLine = true;
+						for (int pointX = 1; pointX < fieldW - 1; pointX++)
+							bLine &= (playingF[(currenty + pointY) * fieldW + pointX]) != 0;
 
-    tetr[6].append(L"..X.");
-    tetr[6].append(L"..X.");
-    tetr[6].append(L".X..");
-    tetr[6].append(L".X..");
+						if (bLine)
+						{
+							// Removing Line
+							for (int pointX = 1; pointX < fieldW - 1; pointX++)
+								playingF[(currenty + pointY) * fieldW + pointX] = 8;
+							lines.push_back(currenty + pointY);
+						}
+					}
 
-    playingF = new unsigned char[fieldW * fieldH];
+				score += 25;
+				if (!lines.empty())	score += (1 << lines.size()) * 100;
 
-    for (int x = 0; x < fieldW; x++)
-        for (int y = 0; y < fieldH; y++)
-            playingF[y * fieldW + x] = (x == 0 || x == fieldW - 1 || y == fieldH - 1) ? 9 : 0;
+				// Pick New Piece
+				currentx = fieldW / 2;
+				currenty = 0;
+				currentrotate = 0;
+				currentpiece = rand() % 7;
 
+				
+				gameover = !PieceFit(currentpiece, currentrotate, currentx, currenty);
+			}
+		}
 
-    wchar_t* screen = new wchar_t[nScreenWidth * nScreenHeight];
-    for (int i = 0; i < nScreenWidth * nScreenHeight; i++) screen[i] = L' ';
-    HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-    SetConsoleActiveScreenBuffer(hConsole);
-    DWORD dwBytesWritten = 0;
+		
 
-    // Game Logic
-    bool gameover = false;
+		// Field
+		for (int x = 0; x < fieldW; x++)
+			for (int y = 0; y < fieldH; y++)
+				screen[(y + 2) * screenW + (x + 2)] = L" QETUIMN=["[playingF[y * fieldW + x]];
 
-    int currentpiece = 0;
-    int currentrotate = 0;
-    int currentx = fieldW / 2;
-    int currenty = 0;
+		// Draw Current Piece
+		for (int pointX = 0; pointX < 4; pointX++)
+			for (int pointY = 0; pointY < 4; pointY++)
+				if (tetr[currentpiece][Rotate(pointX, pointY, currentrotate)] != L'.')
+					screen[(currenty + pointY + 2) * screenW + (currentx + pointX + 2)] = currentpiece + 65;
 
-    bool Akey[4];
-    bool rotatehold = false;
+		//Score
+		swprintf_s(&screen[2 * screenW + fieldW + 6], 16, L"SCORE: %8d", score);
 
-    int speed = 20;
-    int speedcount = 0;
-    bool forcedown = false;
+		
+		if (!lines.empty())
+		{
+			
+			WriteConsoleOutputCharacter(hConsole, screen, screenW * screenH, { 0,0 }, &dwBytesWritten);
+			this_thread::sleep_for(400ms);
 
-    vector<int> lines
+			for (auto& v : lines)
+				for (int pointX = 1; pointX < fieldW - 1; pointX++)
+				{
+					for (int pointY = v; pointY > 0; pointY--)
+						playingF[pointY * fieldW + pointX] = playingF[(pointY - 1) * fieldW + pointX];
+					playingF[pointX] = 0;
+				}
 
+			lines.clear();
+		}
 
+		// Display Frame
+		WriteConsoleOutputCharacter(hConsole, screen, screenW * screenH, { 0,0 }, &dwBytesWritten);
+	}
 
-    while (!gameover)
-    {
+	// GAME OVER
 
-        //time 
-        this_thread::sleep_for(50ms);
-        speedcount++;
-        forcedown = (speedcount == speed);
+	CloseHandle(hConsole);
+	cout << "Game Over!! Score:" << score << endl;
+	system("pause");
 
-        //input 
-        for (int i = 0; i < 4; i++)
-            Akey[i] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[i]))) != 0;
-
-
-        //logistics
-        currentx += (Akey[0] && PieceFit(currentpiece, currentrotate, currentx + 1, currenty) ? 1 : 0;
-        currentx -= (Akey[1] && PieceFit(currentpiece, currentrotate, currentx - 1, currenty)) ? 1 : 0;
-        currenty += (Akey[2] && PieceFit(currentpiece, currentrotate, currentx, currenty + 1)) ? 1 : 0;
-
-        if (Akey[3])
-        {
-            currentrotate += (!rotatehold && PieceFit(currentpiece, currentrotate + 1, currentx, currenty)) ? 1 : 0;
-            rotatehold = true;
-        }
-        else
-            rotatehold = false;
-
-
-        if (forcedown)
-        {
-            if (PieceFit(currentpiece, currentrotate, currentx, currenty + 1))
-                currenty++;
-            else
-            {
-                // locking the piece to stay in the field
-                for (int a = 0; a < 4; a++)
-                    for (int b = 0; b < 4; b++)
-                        if (tetr[currentpiece][Rotate(a, b, currentrotate)] == L'X')
-                            playingF[(currenty + b) * fieldW + (currentx + a)] = currentpiece + 1;
-
-                // checking for lines
-                for (int b = 0; b < 4; b++)
-                    if (currenty + b < fieldH - 1)
-                    {
-                        bool line = true;
-                        for (int a = 1; a < fieldW - 1; a++)
-                            line &= (playingF[(currenty + py) * fieldW + a]) != 0;
-
-                        if (line)
-                        {
-                            // removing the line
-                            for (int a = 1; a < fieldW - 1; a++)
-                                playingF[(currenty + b) * fieldW = px] = 8;
-
-                            lines.push_back(currenty + b);
-                        }
-                    }
-                
-                
-                // choosing next piece
-                currentx = fieldW / 2;
-                currenty = 0;
-                currentrotate = 0;
-                currentpiece = rand() % 7;
-                
-                // If the piece doesn't fit
-                gameover = !PieceFit(currentpiece, currentrotate, currentx, currenty + 1);
-            }
-            speedcount = 0;
-        }
-
-        //output
-
-        //field
-        for (int x = 0; x < fieldW; x++)
-            for (int y = 0; y < fieldH; y++)
-                screen[(y + 2) * nScreenWidth + (x + 2)] = L" ABCDEFG=#"[playingF[y * fieldW + x]];
-
-        //pieces
-        for (int a = 0; a < 4; a++)
-            for (int b = 0; b < 4; b++)
-                if (tetr[currentpiece][Rotate(a, b, currentrotate)] == L'X')
-                    screen[(currenty + b + 2) * nScreenWidth + (currentx + a + 2)] = currentpiece + 65;
-
-        if (!lines.empty())
-        {
-            WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
-            this_thread::sleep_for(400ms);
-
-            for (auto &v : lines)
-                for (int a = 1; a < fieldW - 1; a++)
-                {
-                    for (int b = v; b > 0; b--)
-                        playingF[b * fieldW + a] = playingF[(b - 1) * fieldW + a];
-                    playingF[a] = 0;
-
-                }
-            lines.clear();
-        }
-       
-            
-        //frame
-        WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
-    }
-
-    return 0;
+	return 0;
 }
