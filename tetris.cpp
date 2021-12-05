@@ -36,7 +36,7 @@ int Rotate(int a, int b, int r)
     case 3: return 3 - b + (a * 4);
 
 
-bool piecefit(int aTetr, int rotation, Xposition, int Yposition)
+bool piecefit(int aTetr, int rotation, int Xposition, int Yposition)
 {
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
@@ -123,10 +123,55 @@ int main()
     // Game Logic
     bool bGameOver = false;
 
-    int currentiece = 0;
+    int currentpiece = 0;
     int currentrotate = 0;
     int currentx = nFieldWidth / 2;
     int currenty = 0;
+
+    bool Akey[4];
+    bool ARotationHold = false;
+
+    // Timing
+    thread::sleep(50ms);
+
+
+    // Inputs
+    for (int i = 0; i < 4; i++)
+        Akey[i] = (0x8000 & KeyState((unsigned char)("\x27\x25\x28Z"[i]))) != 0;
+
+
+    // More game logic
+    if (Akey[1])
+    {
+        if (piecefit(currentpiece, currentrotate, currentx - 1, currenty))
+        {
+            currentx = currentx - 1;
+        }
+    }
+
+    if (Akey[0])
+    {
+        if (piecefit(currentpiece, currentrotate, currentx + 1, currenty))
+        {
+            currentx = currentx + 1;
+        }
+    }
+
+    if (Akey[2])
+    {
+        if (piecefit(currentpiece, currentrotate, currentx, currenty + 1))
+        {
+            currenty = currenty + 1;
+        }
+    }
+
+    if (Akey[3])
+    {
+        currentrotate += (!ARotationHold && piecefit(currentpiece, currentrotate + 1, currentx, currenty)) ? 1 : 0;
+        ARotationHold = true;
+    }
+    else
+        ARotationHold = false;
 
     while (!bGameOver)
     {
@@ -139,7 +184,7 @@ int main()
                 screen[(y + 2) * nScreenWidth + (x + 2)] = L" ABCDEFG=#"[playingF[y * nFieldWidth + x]];
 
 
-        //Draw Frames
+        //Draw Frame
         WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
     }
 
