@@ -6,15 +6,13 @@ using namespace std;
 
 int main()
 {
-
     cout << "Welcome to our calculator" << endl;
     cout << "Please select a planet:" << endl;
 
-    double mass;
+
     double acceleration;
     double time;
-    double v;
-
+    double speed;
 
     int selector;
     int Mercury = 1;
@@ -33,124 +31,365 @@ int main()
         if (selector == Mercury && selector <= 8)
         {
             cout << "You chose to work on Mercury" << endl;
-            cout << "Now please insert the mass of your object and the time of travelling:" << endl;
-            
+            cout << "Select which unit to calculate:" << endl;
+            cout << "For time press 1, for speed press 2" << endl;
 
-            double g = 3.7;
+            int selectorfirst;
 
-            cin >> mass;
-            cin >> time;
+            cin >> selectorfirst;
 
-            v = g * time;
+            double g = 1.6;
 
-            cout << "The speed of your object is " << v;
+            if (selectorfirst == 1 && selectorfirst <= 2)
+            {
+                cout << "You chose to calculate time" << endl;
+                cout << "For time you need this formula t = V/g" << endl;
+
+                cout << "t = V / g" << endl;
+
+                cout << "V = ";
+                cin >> speed;
+
+                time = speed / g;
+                cout << "Your time of travelling is " << time << endl;
+            }
+            if (selectorfirst == 2 && selectorfirst <= 2)
+            {
+                cout << "You chose to calculate speed" << endl;
+                cout << "For time you need this formula V = g.t" << endl;
+
+                cout << "V = g.t" << endl;
+
+                cout << "t = ";
+                cin >> time;
+
+                speed = time / g;
+                cout << "Your speed of travelling is " << speed << endl;
+            }
+
+            else
+            {
+                cout << "Invalid input";
+            }
+
         }
         if (selector == Venus && selector <= 8)
         {
             cout << "You chose to work on Venus" << endl;
-            cout << "Now please insert the mass of your object and the time of travelling:" << endl;
-           
+            cout << "Select which unit to calculate:" << endl;
+            cout << "For acceleration press 1, for time press 2" << endl;
 
             double g = 8.8;
 
-            cin >> mass;
-            cin >> time;
+            int selectorsecond;
 
-            v = g * time;
+            cin >> selectorsecond;
 
-            cout << "The speed of your object is " << v;
+            if (selectorsecond == 1 && selectorsecond <= 2)
+            {
+                cout << "You chose to calculate time" << endl;
+                cout << "For time you need this formula t = V/g" << endl;
+
+                cout << "t = V / g" << endl;
+
+                cout << "V = ";
+                cin >> speed;
+
+                time = speed / g;
+                cout << "Your time of travelling is " << time << endl;
+            }
+            if (selectorsecond == 2 && selectorsecond <= 2)
+            {
+                cout << "You chose to calculate speed" << endl;
+                cout << "For time you need this formula V = g.t" << endl;
+
+                cout << "V = g.t" << endl;
+
+                cout << "t = ";
+                cin >> time;
+
+                speed = time / g;
+                cout << "Your speed of travelling is " << speed << endl;
+            }
+
+            else
+            {
+                cout << "Invalid input";
+            }
         }
         if (selector == Earth && selector <= 8)
         {
             cout << "You chose to work on Earth" << endl;
-            cout << "Now please insert the mass of your object and the time of travelling:" << endl;
+            cout << "Select which unit to calculate:" << endl;
+            cout << "For acceleration press 1, for time press 2" << endl;
 
             double g = 9.8;
 
-            cin >> mass;
-            cin >> time;
+            int selectorthird;
 
-            v = g * time;
+            cin >> selectorthird;
 
-            cout << "The speed of your object is " << v;
+            if (selectorthird == 1 && selectorthird <= 2)
+            {
+                cout << "You chose to calculate time" << endl;
+                cout << "For time you need this formula t = V/g" << endl;
+
+                cout << "t = V / g" << endl;
+
+                cout << "V = ";
+                cin >> speed;
+
+                time = speed / g;
+                cout << "Your time of travelling is " << time << endl;
+            }
+            if (selectorthird == 2 && selectorthird <= 2)
+            {
+                cout << "You chose to calculate speed" << endl;
+                cout << "For time you need this formula V = g.t" << endl;
+
+                cout << "V = g.t" << endl;
+
+                cout << "t = ";
+                cin >> time;
+
+                speed = time / g;
+                cout << "Your speed of travelling is " << speed << endl;
+            }
+
+            else
+            {
+                cout << "Invalid input";
+            }
 
         }
         if (selector == Mars && selector <= 8)
         {
             cout << "You chose to work on Mars" << endl;
-            cout << "Now please insert the mass of your object and the time of travelling:" << endl;
+            cout << "Select which unit to calculate:" << endl;
+            cout << "For acceleration press 1, for time press 2" << endl;
 
             double g = 3.8;
 
-            cin >> mass;
-            cin >> time;
+            int selectorfourth;
 
-            v = g * time;
+            cin >> selectorfourth;
 
-            cout << "The speed of your object is " << v;
+            if (selectorfourth == 1 && selectorfourth <= 2)
+            {
+                cout << "You chose to calculate time" << endl;
+                cout << "For time you need this formula t = V/g" << endl;
+
+                cout << "t = V / g" << endl;
+
+                cout << "V = ";
+                cin >> speed;
+
+                time = speed / g;
+                cout << "Your time of travelling is " << time << endl;
+            }
+            if (selectorfourth == 2 && selectorfourth <= 2)
+            {
+                cout << "You chose to calculate speed" << endl;
+                cout << "For time you need this formula V = g.t" << endl;
+
+                cout << "V = g.t" << endl;
+
+                cout << "t = ";
+                cin >> time;
+
+                speed = time / g;
+                cout << "Your speed of travelling is " << speed << endl;
+            }
+
+            else
+            {
+                cout << "Invalid input";
+            }
         }
         if (selector == Jupiter && selector <= 8)
         {
             cout << "You chose to work on Jupiter" << endl;
-            cout << "Now please insert the mass of your object and the time of travelling:" << endl;
-            
+            cout << "Select which unit to calculate:" << endl;
+            cout << "For acceleration press 1, for time press 2" << endl;
+
 
             double g = 24.9;
 
-            cin >> mass;
-            cin >> time;
+            int selectorfifth;
 
-            v = g * time;
+            cin >> selectorfifth;
 
-            cout << "The speed of your object is " << v;
+            if (selectorfifth == 1 && selectorfifth <= 2)
+            {
+                cout << "You chose to calculate time" << endl;
+                cout << "For time you need this formula t = V/g" << endl;
+
+                cout << "t = V / g" << endl;
+
+                cout << "V = ";
+                cin >> speed;
+
+                time = speed / g;
+                cout << "Your time of travelling is " << time << endl;
+            }
+            if (selectorfifth == 2 && selectorfifth <= 2)
+            {
+                cout << "You chose to calculate speed" << endl;
+                cout << "For time you need this formula V = g.t" << endl;
+
+                cout << "V = g.t" << endl;
+
+                cout << "t = ";
+                cin >> time;
+
+                speed = time / g;
+                cout << "Your speed of travelling is " << speed << endl;
+            }
+
+            else
+            {
+                cout << "Invalid input";
+            }
         }
         if (selector == Saturn && selector <= 8)
         {
             cout << "You chose to work on Saturn" << endl;
-            cout << "Now please insert the mass of your object and the time of travelling:" << endl;
+            cout << "Select which unit to calculate:" << endl;
+            cout << "For acceleration press 1, for time press 2" << endl;
 
             double g = 9;
 
-            cin >> mass;
-            cin >> time;
+            int sixthselector;
 
-            v = g * time;
+            cin >> sixthselector;
 
-            cout << "The speed of your object is " << v;
+            if (sixthselector == 1 && sixthselector <= 2)
+            {
+                cout << "You chose to calculate time" << endl;
+                cout << "For time you need this formula t = V/g" << endl;
+
+                cout << "t = V / g" << endl;
+
+                cout << "V = ";
+                cin >> speed;
+
+                time = speed / g;
+                cout << "Your time of travelling is " << time << endl;
+            }
+            if (sixthselector == 2 && sixthselector <= 2)
+            {
+                cout << "You chose to calculate speed" << endl;
+                cout << "For time you need this formula V = g.t" << endl;
+
+                cout << "V = g.t" << endl;
+
+                cout << "t = ";
+                cin >> time;
+
+                speed = time / g;
+                cout << "Your speed of travelling is " << speed << endl;
+            }
+
+            else
+            {
+                cout << "Invalid input";
+            }
         }
+
         if (selector == Uranus && selector <= 8)
         {
             cout << "You chose to work on Uranus" << endl;
-            cout << "Now please insert the mass of your object and the time of travelling:" << endl;
+            cout << "Select which unit to calculate:" << endl;
+            cout << "For acceleration press 1, for time press 2" << endl;
 
             double g = 8.7;
 
-            cin >> mass;
-            cin >> time;
+            int seventhselector;
 
-            v = g * time;
+            cin >> seventhselector;
 
-            cout << "The speed of your object is " << v;
+            if (seventhselector == 1 && seventhselector <= 2)
+            {
+                cout << "You chose to calculate time" << endl;
+                cout << "For time you need this formula t = V/g" << endl;
+
+                cout << "t = V / g" << endl;
+
+                cout << "V = ";
+                cin >> speed;
+
+                time = speed / g;
+                cout << "Your time of travelling is " << time << endl;
+            }
+            if (seventhselector == 2 && seventhselector <= 2)
+            {
+                cout << "You chose to calculate speed" << endl;
+                cout << "For time you need this formula V = g.t" << endl;
+
+                cout << "V = g.t" << endl;
+
+                cout << "t = ";
+                cin >> time;
+
+                speed = time / g;
+                cout << "Your speed of travelling is " << speed << endl;
+            }
+
+            else
+            {
+                cout << "Invalid input";
+            }
         }
+     
         if (selector == Neptune && selector <= 8)
         {
             cout << "You chose to work on Neptune" << endl;
-            cout << "Now please insert the mass of your object and the time of travelling:" << endl;
+            cout << "Select which unit to calculate:" << endl;
+            cout << "For acceleration press 1, for time press 2" << endl;
 
             double g = 11.2;
 
-            cin >> mass;
-            cin >> time;
+            int eightselector;
 
-            v = g * time;
+            cin >> eightselector;
 
-            cout << "The speed of your object is " << v;
+            if (eightselector == 1 && eightselector <= 2)
+            {
+                cout << "You chose to calculate time" << endl;
+                cout << "For time you need this formula t = V/g" << endl;
+
+                cout << "t = V / g" << endl;
+
+                cout << "V = ";
+                cin >> speed;
+
+                time = speed / g;
+                cout << "Your time of travelling is " << time << endl;
+            }
+            if (eightselector == 2 && eightselector <= 2)
+            {
+                cout << "You chose to calculate speed" << endl;
+                cout << "For time you need this formula V = g.t" << endl;
+
+                cout << "V = g.t" << endl;
+
+                cout << "t = ";
+                cin >> time;
+
+                speed = time / g;
+                cout << "Your speed of travelling is " << speed << endl;
+            }
+
+            else
+            {
+                cout << "Invalid input";
+            }
         }
     }
 
     else
     {
-        cout << "try again";
+        cout << "Invaid input, please try again!" << endl;
     }
     return 0;
 }
