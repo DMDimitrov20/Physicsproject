@@ -1,68 +1,49 @@
 #include <iostream>
-
-using namespace std;
-#ifndef UNICODE
-#define UNICODE
-#endif
-#ifndef _UNICODE
-#define _UNICODE
-#endif
-
 #include <Windows.h>
 
-
-wstring tetr[7];
-int nFieldWidth = 12;
-int nFieldHeight = 18;
-unsigned char* playingF = nullptr;
+using namespace std;
 
 wstring tetromino[7];
 int nFieldWidth = 12;
 int nFieldHeight = 18;
-unsigned char* playingF = nullptr;
-
+unsigned char* pField = nullptr;
 
 int nScreenWidth = 120; //y na tetris
 int nScreenHeight = 30; //x na tetris
-
-
-int Rotate(int a, int b, int r)
+int Rotate(int px, int py, int r)
 {
     switch (r % 4)
     {
-    case 0: return b * 4 + a;
-    case 1: return 12 + b - (a * 4);
-    case 2: return 15 - (b * 4) - a;
-    case 3: return 3 - b + (a * 4);
+    case 0: return py * 4 + px;
+    case 1: return 12 + py - (px * 4);
+    case 2: return 15 - (py * 4) - px;
+    case 3: return 3 - py + (px * 4);
+    }
+    return 0;
+}
 
-
-bool piecefit(int aTetr, int rotation, int Xposition, int Yposition)
+bool DoesPieceFit(int nTetromino, int nRotation, int nPosX, int nPosY)
 {
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
+    for(int px = 0; px < 4; px++)
+        for (int py = 0; py < 4; py++)
         {
-            int P = Rotate(i, j, rotation);
+            int pi = Rotate(px, py, nRotation);
 
-            int F = (Yposition + j) * nFieldWidth + (Xposition + i);
+            //Index Field
+            int fi = (nPosY + py) * nFieldWidth + (nPosX + px);
 
-            if (Xposition + i >= 0 && Xposition + i < nFieldWidth)
+            if (nPosX + px >= 0 && nPosY + px < nFieldWidth)
             {
-                if (Yposition + j >= 0 && Yposition + j < nFiedlHeight)
+                if (nPosY + py >= 0 && nPosY + py < nFieldHeight)
                 {
-                    if (tetr[aTetr][P] == L'X' && playingF[F] != 0)
+                    if (tetromino[nTetromino][pi] == L'X' && pField[fi] != 0)
                         return false;
                 }
             }
         }
     
-    
-    
-    
     return true;
 }
-
-
-
 int main()
 {
     tetromino[0].append(L"..X.");
@@ -106,12 +87,11 @@ int main()
     tetromino[6].append(L".X..");
     tetromino[6].append(L".X..");
 
-    playingF = new unsigned char[nFieldWidth * nFieldHeight];
+    pField = new unsigned char[nFieldWidth * nFieldHeight];
 
     for (int x = 0; x < nFieldWidth; x++)
         for (int y = 0; y < nFieldHeight; y++)
-            playingF[y * nFieldWidth + x] = (x == 0 || x == nFieldWidth - 1 || y == nFieldHeight - 1) ? 9 : 0;
-
+            pField[y * nFieldWidth + x] = (x == 0 || x == nFieldWidth - 1 || y == nFieldHeight - 1) ? 9 : 0;
 
 
     wchar_t* screen = new wchar_t[nScreenWidth * nScreenHeight];
@@ -123,74 +103,36 @@ int main()
     // Game Logic
     bool bGameOver = false;
 
-    int currentpiece = 0;
-    int currentrotate = 0;
-    int currentx = nFieldWidth / 2;
-    int currenty = 0;
+    int nCurrentPiece = 0;
+    int nCurrentRotation = 0;
+    int nCurrentX = nFieldWidth / 2;
+    int nCurrentY = 0;
 
-    bool Akey[4];
-    bool ARotationHold = false;
-
-    // Timing
-    thread::sleep(50ms);
-
-
-    // Inputs
-    for (int i = 0; i < 4; i++)
-        Akey[i] = (0x8000 & KeyState((unsigned char)("\x27\x25\x28Z"[i]))) != 0;
-
-
-    // More game logic
-    if (Akey[1])
-    {
-        if (piecefit(currentpiece, currentrotate, currentx - 1, currenty))
-        {
-            currentx = currentx - 1;
-        }
-    }
-
-    if (Akey[0])
-    {
-        if (piecefit(currentpiece, currentrotate, currentx + 1, currenty))
-        {
-            currentx = currentx + 1;
-        }
-    }
-
-    if (Akey[2])
-    {
-        if (piecefit(currentpiece, currentrotate, currentx, currenty + 1))
-        {
-            currenty = currenty + 1;
-        }
-    }
-
-    if (Akey[3])
-    {
-        currentrotate += (!ARotationHold && piecefit(currentpiece, currentrotate + 1, currentx, currenty)) ? 1 : 0;
-        ARotationHold = true;
-    }
-    else
-        ARotationHold = false;
 
     while (!bGameOver)
     {
-        //Draw Field
+
+        //time 
+
+        //input 
+
+        //logistics
+
+        //output
+
+        //field
         for (int x = 0; x < nFieldWidth; x++)
             for (int y = 0; y < nFieldHeight; y++)
+                screen[(y + 2) * nScreenWidth + (x + 2)] = L" ABCDEFG=#"[pField[y * nFieldWidth + x]];
 
-                screen[(y + 2) * nScreenWidth + (x + 2)] = L" ABCDEFG=#"[playingF[y * nFieldWidth + x]];
-
-                screen[(y + 2) * nScreenWidth + (x + 2)] = L" ABCDEFG=#"[playingF[y * nFieldWidth + x]];
-
-
-        //Draw Frame
+        //pieces
+        for (int px = 0; px < 4; px++)
+            for (int py = 0; py < 4; py++)
+                if (tetromino[nCurrentPiece][Rotate(px, py, nCurrentRotation)] == L'X')
+                    screen[(nCurrentY + py + 2) * nScreenWidth + (nCurrentX + px + 2)] = nCurrentPiece + 65;
+        //frame
         WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
     }
 
     return 0;
-
 }
-
-}
-
