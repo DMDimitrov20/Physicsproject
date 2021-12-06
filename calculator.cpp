@@ -24,6 +24,16 @@ int main()
     int Uranus = 7;
     int Neptune = 8;
 
+    
+    cout << "For Mercury press 1" << endl;
+    cout << "For Venus press 2" << endl;
+    cout << "For Earth press 3" << endl;
+    cout << "For Mars press 4" << endl;
+    cout << "For Jupiter press 5" << endl;
+    cout << "For Saturn press 6" << endl;
+    cout << "For Uranus press 7" << endl;
+    cout << "For Neptune press 8" << endl;
+    
     cin >> selector;
 
     if (selector <= 8)
